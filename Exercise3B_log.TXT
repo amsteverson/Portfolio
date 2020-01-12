@@ -1,0 +1,649 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+161        *LIBNAME CDATA 'C:\MEPS\SAS\DATA';
+162        *LIBNAME CDATA "\\programs.ahrq.local\programs\meps\AHRQ4_CY2\B_CFACT\BJ001DVK\Workshop_2018\SAS\Data";
+163        
+164        TITLE1 'AHRQ MEPS DATA USERS WORKSHOP -- 2018';
+165        TITLE2 'EXERCISE3B.SAS: CALCULATE EXPENDITURES FOR ALL EVENTS ASSOCIATED WITH A CONDITION (DIABETES)';
+166        
+167        PROC FORMAT;
+168          VALUE GTZERO
+169             0         = '0'
+170             0 <- HIGH = '>0'
+171                       ;
+NOTE: Format GTZERO has been output.
+172          VALUE GEZERO
+173             0 - HIGH = 'GE 0' ;
+NOTE: Format GEZERO has been output.
+174        RUN;
+
+NOTE: PROCEDURE FORMAT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+175        
+176        /*1) PULL OUT CONDITIONS WITH DIABETES (CCS CODE='049', '050') FROM 2015 CONDITION PUF - HC180*/
+177        
+178        DATA DIAB;
+179         SET MEPS.H180;
+180         IF CCCODEX IN ('049', '050');
+181        RUN;
+
+NOTE: There were 123227 observations read from the data set MEPS.H180.
+NOTE: The data set WORK.DIAB has 3327 observations and 27 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.13 seconds
+      cpu time            0.06 seconds
+      
+
+182        
+183        TITLE3 "CHECK CCS CODES";
+184        PROC FREQ DATA=DIAB;
+185          TABLES CCCODEX / LIST MISSING;
+186        RUN;
+
+NOTE: There were 3327 observations read from the data set WORK.DIAB.
+NOTE: The PROCEDURE FREQ printed page 1.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.08 seconds
+      cpu time            0.06 seconds
+      
+
+187        
+188        
+189        /*2) GET EVENT ID FOR THE DIABETIC CONDITIONS FROM CONDITION-EVENT LINK FILE*/
+190        
+191        DATA  DIAB2 ;
+192        MERGE DIAB          (IN=AA KEEP=DUPERSID CONDIDX CCCODEX)
+193              MEPS.H178IF1 (IN=BB KEEP=CONDIDX  EVNTIDX );
+194           BY CONDIDX;
+3                                                          The SAS System
+
+195              IF AA AND BB ;
+196        RUN;
+
+NOTE: There were 3327 observations read from the data set WORK.DIAB.
+NOTE: There were 377736 observations read from the data set MEPS.H178IF1.
+NOTE: The data set WORK.DIAB2 has 21659 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.24 seconds
+      cpu time            0.17 seconds
+      
+
+197        
+198        TITLE3 "SAMPLE DUMP FOR CONDITION-EVEL LINK FILE";
+199        PROC PRINT DATA=DIAB2 (OBS=20);
+200        BY CONDIDX;
+201        RUN;
+
+NOTE: There were 20 observations read from the data set WORK.DIAB2.
+NOTE: The PROCEDURE PRINT printed page 2.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.05 seconds
+      
+
+202        
+203        
+204        /*3) DELETE DUPLICATE CASES PER EVENT*/
+205        
+206        PROC SORT DATA=DIAB2 (KEEP=DUPERSID EVNTIDX) OUT=DIAB3 NODUPKEY;
+207          BY EVNTIDX;
+208        RUN;
+
+NOTE: There were 21659 observations read from the data set WORK.DIAB2.
+NOTE: 151 observations with duplicate key values were deleted.
+NOTE: The data set WORK.DIAB3 has 21508 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+209        
+210        TITLE3 "SAMPLE DUMP AFTER DUPLICATE CASES ARE DELETED";
+211        PROC PRINT DATA=DIAB3 (OBS=30);
+212        RUN;
+
+NOTE: There were 30 observations read from the data set WORK.DIAB3.
+NOTE: The PROCEDURE PRINT printed page 3.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+
+213        
+214        
+215        /*4) SUM UP PMED PURCHASE-LEVEL DATA TO EVENT-LEVEL */
+216        
+217        PROC SORT DATA=MEPS.H178A  OUT=PMED (KEEP=LINKIDX RXXP15X  RXSF15X--RXOU15X RENAME=(LINKIDX=EVNTIDX));
+218          BY LINKIDX;
+219        RUN;
+
+NOTE: There were 330453 observations read from the data set MEPS.H178A.
+NOTE: The data set WORK.PMED has 330453 observations and 14 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           1.39 seconds
+      cpu time            0.86 seconds
+      
+
+220        
+221        PROC SUMMARY DATA=PMED NWAY;
+222        CLASS EVNTIDX;
+223        VAR RXXP15X  RXSF15X--RXOU15X;
+224        OUTPUT OUT=PMED2 SUM=;
+225        RUN;
+
+NOTE: There were 330453 observations read from the data set WORK.PMED.
+NOTE: The data set WORK.PMED2 has 140953 observations and 16 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+4                                                          The SAS System
+
+      real time           0.36 seconds
+      cpu time            0.40 seconds
+      
+
+226        
+227        
+228        /*5) ALIGN EXP VARIABLES IN DIFFERENT EVENTS WITH THE SAME NAMES*/
+229        
+230        DATA PMED3 (KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP);
+231        SET  PMED2;
+232        
+233             SF     = RXSF15X ;
+234             MR     = RXMR15X ;
+235             MD     = RXMD15X ;
+236             PV     = RXPV15X ;
+237             VA     = RXVA15X ;
+238             TR     = RXTR15X ;
+239             OF     = RXOF15X ;
+240             SL     = RXSL15X ;
+241             WC     = RXWC15X ;
+242             OR     = RXOR15X ;
+243             OU     = RXOU15X ;
+244             OT     = RXOT15X ;
+245             TOTEXP = RXXP15X ;
+246        
+247             IF TOTEXP GE 0 ;
+248        RUN;
+
+NOTE: There were 140953 observations read from the data set WORK.PMED2.
+NOTE: The data set WORK.PMED3 has 140953 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+
+249        
+250        
+251        DATA OB (KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP);
+252         SET MEPS.H178G ;
+253        
+254             SF     = OBSF15X ;
+255             MR     = OBMR15X ;
+256             MD     = OBMD15X ;
+257             PV     = OBPV15X ;
+258             VA     = OBVA15X ;
+259             TR     = OBTR15X ;
+260             OF     = OBOF15X ;
+261             SL     = OBSL15X ;
+262             WC     = OBWC15X ;
+263             OR     = OBOR15X ;
+264             OU     = OBOU15X ;
+265             OT     = OBOT15X ;
+266             TOTEXP = OBXP15X ;
+267        
+268             IF TOTEXP GE 0 ;
+269        RUN ;
+
+NOTE: There were 172388 observations read from the data set MEPS.H178G.
+NOTE: The data set WORK.OB has 171076 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.40 seconds
+      cpu time            0.21 seconds
+      
+
+270        
+271        DATA EROM (KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP);
+272        SET  MEPS.H178E;
+273             SF     = ERFSF15X + ERDSF15X ;
+274             MR     = ERFMR15X + ERDMR15X ;
+275             MD     = ERFMD15X + ERDMD15X ;
+276             PV     = ERFPV15X + ERDPV15X ;
+277             VA     = ERFVA15X + ERDVA15X ;
+278             TR     = ERFTR15X + ERDTR15X ;
+279             OF     = ERFOF15X + ERDOF15X ;
+280             SL     = ERFSL15X + ERDSL15X ;
+281             WC     = ERFWC15X + ERDWC15X ;
+282             OR     = ERFOR15X + ERDOR15X ;
+5                                                          The SAS System
+
+283             OU     = ERFOU15X + ERDOU15X ;
+284             OT     = ERFOT15X + ERDOT15X ;
+285             TOTEXP = ERXP15X ;
+286        
+287             IF TOTEXP GE 0;
+288        RUN;
+
+NOTE: There were 7163 observations read from the data set MEPS.H178E.
+NOTE: The data set WORK.EROM has 7163 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
+
+289        
+290        DATA IPAT (KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP);
+291        SET  MEPS.H178D ;
+292        
+293             SF    = IPFSF15X + IPDSF15X ;
+294             MR    = IPFMR15X + IPDMR15X ;
+295             MD    = IPFMD15X + IPDMD15X ;
+296             PV    = IPFPV15X + IPDPV15X ;
+297             VA    = IPFVA15X + IPDVA15X ;
+298             TR    = IPFTR15X + IPDTR15X ;
+299             OF    = IPFOF15X + IPDOF15X ;
+300             SL    = IPFSL15X + IPDSL15X ;
+301             WC    = IPFWC15X + IPDWC15X ;
+302             OR    = IPFOR15X + IPDOR15X ;
+303             OU    = IPFOU15X + IPDOU15X ;
+304             OT    = IPFOT15X + IPDOT15X ;
+305             TOTEXP= IPXP15X ;
+306        
+307             IF TOTEXP GE 0 ;
+308        RUN;
+
+NOTE: There were 2921 observations read from the data set MEPS.H178D.
+NOTE: The data set WORK.IPAT has 2921 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+309        
+310        DATA HVIS (KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP);
+311        SET  MEPS.H178H;
+312        
+313             SF     = HHSF15X ;
+314             MR     = HHMR15X ;
+315             MD     = HHMD15X ;
+316             PV     = HHPV15X ;
+317             VA     = HHVA15X ;
+318             TR     = HHTR15X ;
+319             OF     = HHOF15X ;
+320             SL     = HHSL15X ;
+321             WC     = HHWC15X ;
+322             OR     = HHOR15X ;
+323             OU     = HHOU15X ;
+324             OT     = HHOT15X ;
+325             TOTEXP = HHXP15X ;
+326        
+327             IF TOTEXP GE 0;
+328        RUN;
+
+NOTE: There were 6663 observations read from the data set MEPS.H178H.
+NOTE: The data set WORK.HVIS has 5933 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.02 seconds
+      
+
+329        
+330        DATA OPAT (KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP);
+331        SET  MEPS.H178F ;
+332        
+333             SF     = OPFSF15X + OPDSF15X ;
+334             MR     = OPFMR15X + OPDMR15X ;
+335             MD     = OPFMD15X + OPDMD15X ;
+6                                                          The SAS System
+
+336             PV     = OPFPV15X + OPDPV15X ;
+337             VA     = OPFVA15X + OPDVA15X ;
+338             TR     = OPFTR15X + OPDTR15X ;
+339             OF     = OPFOF15X + OPDOF15X ;
+340             SL     = OPFSL15X + OPDSL15X ;
+341             WC     = OPFWC15X + OPDWC15X ;
+342             OR     = OPFOR15X + OPDOR15X ;
+343             OU     = OPFOU15X + OPDOU15X ;
+344             OT     = OPFOT15X + OPDOT15X ;
+345             TOTEXP = OPXP15X ;
+346        
+347             IF TOTEXP GE 0;
+348        RUN;
+
+NOTE: There were 14178 observations read from the data set MEPS.H178F.
+NOTE: The data set WORK.OPAT has 14107 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.01 seconds
+      
+
+349        
+350        
+351        /*6)  COMBINE ALL EVENTS INTO ONE DATASET*/
+352        
+353        DATA ALLEVENT;
+354           SET OB   (IN=MV KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP)
+355               EROM (IN=ER KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP)
+356               IPAT (IN=ST KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP)
+357               HVIS (IN=HH KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP)
+358               OPAT (IN=OP KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP)
+359              PMED3 (IN=RX KEEP=EVNTIDX SF MR MD PV VA TR OF SL WC OR OU OT TOTEXP);
+360           BY EVNTIDX;
+361        
+362              LENGTH EVNTYP $4;
+363        
+364              LABEL  EVNTYP = 'EVENT TYPE'
+365                     TOTEXP = 'TOTAL EXPENDITURE FOR EVENT'
+366                     SF     = "SOURCE OF PAYMENT: FAMILY"
+367                     MR     = "SOURCE OF PAYMENT: MEDICARE"
+368                     MD     = "SOURCE OF PAYMENT: MEDICAID"
+369                     PV     = "SOURCE OF PAYMENT: PRIVATE INSURANCE"
+370                     VA     = "SOURCE OF PAYMENT: VETERANS"
+371                     TR     = "SOURCE OF PAYMENT: TRICARE"
+372                     OF     = "SOURCE OF PAYMENT: OTHER FEDERAL"
+373                     SL     = "SOURCE OF PAYMENT: STATE & LOCAL GOV"
+374                     WC     = "SOURCE OF PAYMENT: WORKERS COMP"
+375                     OR     = "SOURCE OF PAYMENT: OTHER PRIVATE"
+376                     OU     = "SOURCE OF PAYMENT: OTHER PUBLIC"
+377                     OT     = "SOURCE OF PAYMENT: OTHER INSURANCE"
+378                            ;
+379        
+380                   IF MV OR OP THEN EVNTYP = 'AMBU' ;
+381              ELSE IF ER       THEN EVNTYP = 'EROM' ;
+382              ELSE IF ST       THEN EVNTYP = 'IPAT' ;
+383              ELSE IF HH       THEN EVNTYP = 'HVIS' ;
+384              ELSE IF RX       THEN EVNTYP = 'PMED' ;
+385        RUN;
+
+NOTE: There were 171076 observations read from the data set WORK.OB.
+NOTE: There were 7163 observations read from the data set WORK.EROM.
+NOTE: There were 2921 observations read from the data set WORK.IPAT.
+NOTE: There were 5933 observations read from the data set WORK.HVIS.
+NOTE: There were 14107 observations read from the data set WORK.OPAT.
+NOTE: There were 140953 observations read from the data set WORK.PMED3.
+NOTE: The data set WORK.ALLEVENT has 342153 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.22 seconds
+      
+
+386        
+387        TITLE3 "ALL EVENTS ARE COMBINED INTO ONE FILE";
+388        PROC FREQ DATA=ALLEVENT;
+389          TABLES EVNTYP TOTEXP SF MR MD PV VA TR OF SL WC OR OU OT /LIST MISSING;
+390          FORMAT TOTEXP  SF MR MD PV VA TR OF SL WC OR OU OT gezero. ;
+391        RUN;
+7                                                          The SAS System
+
+
+NOTE: There were 342153 observations read from the data set WORK.ALLEVENT.
+NOTE: The PROCEDURE FREQ printed pages 4-5.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.71 seconds
+      cpu time            0.53 seconds
+      
+
+392        
+393        PROC PRINT DATA=ALLEVENT (OBS=20);
+394        RUN;
+
+NOTE: There were 20 observations read from the data set WORK.ALLEVENT.
+NOTE: The PROCEDURE PRINT printed page 6.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.10 seconds
+      
+
+395        
+396        
+397        /*7) SUBSET EVENTS TO THOSE ONLY WITH DIABETES*/
+398        
+399        DATA DIAB4;
+400          MERGE DIAB3(IN=AA) ALLEVENT(IN=BB);
+401          BY EVNTIDX;
+402          IF AA AND BB;
+403        RUN;
+
+NOTE: There were 21508 observations read from the data set WORK.DIAB3.
+NOTE: There were 342153 observations read from the data set WORK.ALLEVENT.
+NOTE: The data set WORK.DIAB4 has 21261 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.12 seconds
+      
+
+404        
+405        
+406        /*8) CALCULATE ESTIMATES ON EXPENDITURES AND USE, ALL TYPES OF SERVICE*/
+407        
+408        PROC SUMMARY DATA=DIAB4 NWAY;
+409          CLASS DUPERSID;
+410          VAR TOTEXP SF MR MD PV VA TR OF SL WC OR OU OT;
+411          OUTPUT OUT=ALL SUM=;
+412        RUN;
+
+NOTE: There were 21261 observations read from the data set WORK.DIAB4.
+NOTE: The data set WORK.ALL has 2902 observations and 16 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.02 seconds
+      
+
+413        
+414        
+415        DATA  FY1;
+416        MERGE MEPS.H181 (IN=AA KEEP=DUPERSID VARPSU VARSTR PERWT15F /*ADD MORE VARIABLES*/)
+417              ALL        (IN=BB KEEP=DUPERSID TOTEXP SF MR MD PV VA TR OF SL WC OR OU OT);
+418           BY DUPERSID;
+419        
+420              LABEL SUB = 'PERSONS WHO HAVE AT LEAST 1 EVENT ASSOCIATED WITH DIABETES';
+421        
+422                   IF AA AND     BB THEN SUB=1;
+423              ELSE IF AA AND NOT BB THEN DO ;  /*PERSONS WITHOUT EVENTS WITH DIABETES*/
+424                   SUB   = 2 ;
+425                   TOTEXP= 0 ;
+426                   SF    = 0 ;
+427                   MR    = 0 ;
+428                   MD    = 0 ;
+429                   PV    = 0 ;
+430                   VA    = 0 ;
+431                   TR    = 0 ;
+432                   OF    = 0 ;
+433                   SL    = 0 ;
+434                   WC    = 0 ;
+435                   OR    = 0 ;
+8                                                          The SAS System
+
+436                   OU    = 0 ;
+437                   OT    = 0 ;
+438               END;
+439               IF PERWT15F > 0 ;
+440        RUN;
+
+NOTE: There were 35427 observations read from the data set MEPS.H181.
+NOTE: There were 2902 observations read from the data set WORK.ALL.
+NOTE: The data set WORK.FY1 has 33893 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           1.91 seconds
+      cpu time            0.89 seconds
+      
+
+441        ODS GRAPHICS OFF;
+442        ODS LISTING CLOSE;
+443        PROC SURVEYMEANS DATA=FY1 NOBS SUMWGT SUM STD MEAN STDERR;
+444        	STRATA  VARSTR ;
+445        	CLUSTER VARPSU ;
+446        	WEIGHT PERWT15F ;
+447        	DOMAIN  SUB('1') ;
+448        	VAR TOTEXP SF MR MD PV VA TR OF SL WC OR OU OT;
+449            ODS OUTPUT DOMAIN=OUT1;
+450        RUN;
+
+NOTE: The data set WORK.OUT1 has 13 observations and 10 variables.
+NOTE: PROCEDURE SURVEYMEANS used (Total process time):
+      real time           0.37 seconds
+      cpu time            0.33 seconds
+      
+
+451        ODS LISTING;
+452        TITLE3 "ESTIMATES ON USE AND EXPENDITURES FOR ALL EVENTS ASSOCIATED WITH DIABETES, 2015";
+453        PROC PRINT DATA=OUT1 NOOBS LABEL;
+454        VAR  VARNAME /*VARLABEL*/ N SUMWGT SUM STDDEV MEAN STDERR;
+455        FORMAT N                    comma6.0
+456               SUMWGT SUM    STDDEV comma17.0
+457               MEAN   STDERR        comma9.2
+458            ;
+459        RUN;
+
+NOTE: There were 13 observations read from the data set WORK.OUT1.
+NOTE: The PROCEDURE PRINT printed page 7.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+
+460        
+461        
+462        /*9) CALCULATE ESTIMATES ON EXPENDITURES AND USE BY TYPE OF SERVICE */
+463        
+464        PROC SUMMARY DATA=DIAB4 NWAY;
+465          CLASS DUPERSID EVNTYP;
+466          VAR TOTEXP SF MR MD PV VA TR OF SL WC OR OU OT;
+467          OUTPUT OUT=TOS SUM=;
+468        RUN;
+
+NOTE: There were 21261 observations read from the data set WORK.DIAB4.
+NOTE: The data set WORK.TOS has 4973 observations and 17 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.02 seconds
+      
+
+469        
+470        DATA TOS2;
+471          SET TOS (DROP=_TYPE_ RENAME=(_FREQ_=N_VISITS));
+472          LABEL N_VISITS = '# OF VISITS PER PERSON FOR EACH TYPE OF SERVICE' ;
+473        RUN;
+
+NOTE: There were 4973 observations read from the data set WORK.TOS.
+NOTE: The data set WORK.TOS2 has 4973 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+9                                                          The SAS System
+
+
+474        
+475        TITLE3 "SAMPLE DUMP AFTER DATA IS SUMMED UP TO PERSON-EVENT TYPE-LEVEL";
+476        PROC PRINT DATA=TOS2 (OBS=20);
+477          BY DUPERSID;
+478        RUN;
+
+NOTE: There were 20 observations read from the data set WORK.TOS2.
+NOTE: The PROCEDURE PRINT printed pages 8-9.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.23 seconds
+      
+
+479        
+480        DATA  FYTOS;
+481        MERGE MEPS.H181 (IN=AA KEEP=DUPERSID VARPSU VARSTR PERWT15F /*ADD MORE VARIABLES*/)
+482              TOS2       (IN=BB);
+483          BY DUPERSID;
+484        
+485                  IF AA AND     BB THEN SUB=1;
+486             ELSE IF AA AND NOT BB THEN DO ;   /*PERSONS WITHOUT EVENTS WITH DIABETES*/
+487                  SUB=2;
+488                  EVNTYP   = 'NA';
+489                  N_VISITS = 0 ;
+490                  TOTEXP   = 0 ;
+491                  SF       = 0 ;
+492                  MR       = 0 ;
+493                  MD       = 0 ;
+494                  PV       = 0 ;
+495                  VA       = 0 ;
+496                  TR       = 0 ;
+497                  OF       = 0 ;
+498                  SL       = 0 ;
+499                  WC       = 0 ;
+500                  OR       = 0 ;
+501                  OU       = 0 ;
+502                  OT       = 0 ;
+503             END;
+504        
+505             LABEL SUB = 'PERSONS WHO HAVE AT LEAST 1 EVENT ASSOCIATED WITH DIABETES';
+506        
+507             IF PERWT15F > 0 ;
+508        RUN;
+
+NOTE: There were 35427 observations read from the data set MEPS.H181.
+NOTE: There were 4973 observations read from the data set WORK.TOS2.
+NOTE: The data set WORK.FYTOS has 35931 observations and 20 variables.
+NOTE: DATA statement used (Total process time):
+      real time           1.85 seconds
+      cpu time            0.86 seconds
+      
+
+509        
+510        ODS GRAPHICS OFF;
+511        ODS LISTING CLOSE;
+512        PROC SURVEYMEANS DATA=FYTOS NOBS SUMWGT SUM STD MEAN STDERR;
+513        	STRATA  VARSTR ;
+514        	CLUSTER VARPSU ;
+515        	WEIGHT  PERWT15F ;
+516        	DOMAIN SUB('1') * EVNTYP ;
+517        	VAR N_VISITS TOTEXP  SF  MR  MD PV VA TR OF SL WC OR OU OT;
+518            ODS OUTPUT DOMAIN=OUT2 ;
+519        RUN;
+
+NOTE: Only one cluster in a stratum for PERSONS WHO HAVE AT LEAST 1 EVENT ASSOCIATED WITH DIABETES*EVENT TYPE domains for 
+      variable(s) N_VISITS, TOTEXP, SF, MR, MD, PV, VA, TR, OF, SL, WC, OR, OU, OT. The estimate of variance for N_VISITS, TOTEXP, 
+      SF, MR, MD, PV, VA, TR, OF, SL, WC, OR, OU, OT will omit this stratum.
+NOTE: The data set WORK.OUT2 has 70 observations and 11 variables.
+NOTE: PROCEDURE SURVEYMEANS used (Total process time):
+      real time           0.62 seconds
+      cpu time            0.62 seconds
+      
+
+520        ODS LISTING;
+521        
+522        PROC SORT DATA=OUT2;
+10                                                         The SAS System
+
+523          BY EVNTYP;
+524        RUN;
+
+NOTE: There were 70 observations read from the data set WORK.OUT2.
+NOTE: The data set WORK.OUT2 has 70 observations and 11 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+525        
+526        TITLE3 "ESTIMATES ON USE AND EXPENDITURES FOR EVENTS ASSOCIATED WITH DIABETES, BY TYPE OF SERVICE, 2015";
+527        PROC PRINT DATA=OUT2 NOOBS LABEL;
+528        BY EVNTYP;
+529        VAR  VARNAME /*VARLABEL*/ N SUMWGT SUM STDDEV MEAN STDERR;
+530        FORMAT N                    comma6.0
+531               SUMWGT SUM    STDDEV comma17.0
+532               MEAN   STDERR        comma9.2
+533         ;
+534        RUN;
+
+NOTE: There were 70 observations read from the data set WORK.OUT2.
+NOTE: The PROCEDURE PRINT printed pages 10-11.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.17 seconds
+      cpu time            0.17 seconds
+      
+
+535        PROC PRINTTO;
+536        RUN;
+

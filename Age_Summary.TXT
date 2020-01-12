@@ -1,0 +1,320 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.02 seconds
+      
+
+90         
+91         TITLE1 'MIS 500 PORTFOLIO PROJECT - SUMMARY STATISTICS AND HYPOTHESIS TESTS ORIGINAL CODE';
+92         TITLE2 'CALCULATE SUMMARY STATISTICS ON AGE FOR PERSONS WITH A CONDITION (DIABETES)';
+93         
+94         
+95         PROC FORMAT;
+96         
+97         /* CODE FROM MEPS SAS SITE TO PROVIDE USER FRIENDLY LABELS ON VARIABLES*/
+98           VALUE SEX
+99              . = 'TOTAL'
+100             1 = 'MALE'
+101             2 = 'FEMALE'
+102               ;
+NOTE: Format SEX is already on the library WORK.FORMATS.
+NOTE: Format SEX has been output.
+103        
+104          VALUE YESNO
+105             . = 'TOTAL'
+106             1 = 'YES'
+107             2 = 'NO'
+108               ;
+NOTE: Format YESNO is already on the library WORK.FORMATS.
+NOTE: Format YESNO has been output.
+109        /* ADDED FORMAT FOR RACE TO PROVIDE USER FRIENDLY LABELS ON RACES*/
+110          VALUE RACE
+111          	. = 'TOTAL'
+112          	1 = 'HISPANIC'
+113          	2 = 'NON-HISPANIC WHITE ONLY'
+114          	3 = 'NON-HISPANIC BLACK ONLY'
+115          	4 = 'NON-HISPANIC ASIAN ONLY'
+116          	5 = 'NON-HISPANIC OTHER RACE OR MULTIPLE RACE'
+117          		;
+NOTE: Format RACE is already on the library WORK.FORMATS.
+NOTE: Format RACE has been output.
+118        RUN;
+
+NOTE: PROCEDURE FORMAT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+119        
+120        
+121        /*1) MEPS PROVIDED CODE TO PULL OUT CONDITIONS WITH DIABETES (CCS CODE='049', '050') FROM 2015 CONDITION PUF - HC180*/
+122        
+123        DATA DIAB;
+124         SET MEPS.H180;
+125            IF CCCODEX IN ('049', '050');
+126        RUN;
+
+NOTE: There were 123227 observations read from the data set MEPS.H180.
+NOTE: The data set WORK.DIAB has 3327 observations and 27 variables.
+2                                                          The SAS System
+
+NOTE: DATA statement used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.07 seconds
+      
+
+127        
+128        TITLE3 "CHECK CCS CODES FOR DIABETIC CONDITIONS";
+129        PROC FREQ DATA=DIAB;
+130          TABLES CCCODEX / LIST MISSING;
+131        RUN;
+
+                         MIS 500 PORTFOLIO PROJECT - SUMMARY STATISTICS AND HYPOTHESIS TESTS ORIGINAL CODE                         1
+                            CALCULATE SUMMARY STATISTICS ON AGE FOR PERSONS WITH A CONDITION (DIABETES)
+                                              CHECK CCS CODES FOR DIABETIC CONDITIONS
+
+                                                         The FREQ Procedure
+
+                                               CLINICAL CLASSIFICATION CODE - EDITED
+ 
+                                                                        Cumulative    Cumulative
+                                    CCCODEX    Frequency     Percent     Frequency      Percent
+                                    ------------------------------------------------------------
+                                    049            3228       97.02          3228        97.02  
+                                    050              99        2.98          3327       100.00  
+NOTE: There were 3327 observations read from the data set WORK.DIAB.
+NOTE: The PROCEDURE FREQ printed page 1.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.04 seconds
+      
+
+132        
+133        
+134        /*2) MEPS PROVIDED CODE TO IDENTIFY PERSONS WHO REPORTED DIABETES*/
+135        
+136        PROC SORT DATA=DIAB OUT=DIABPERS (KEEP=DUPERSID) NODUPKEY;
+137          BY DUPERSID;
+138        RUN;
+
+NOTE: There were 3327 observations read from the data set WORK.DIAB.
+NOTE: 262 observations with duplicate key values were deleted.
+NOTE: The data set WORK.DIABPERS has 3065 observations and 1 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+139        
+140        
+141        /*3) MEPS PROVIDED CODE TO CREATE A FLAG FOR PERSONS WITH DIABETES IN THE 2015 FY DATA*/
+142        
+143        DATA  FY1;
+144        MERGE MEPS.H181 (IN=AA)
+145              DIABPERS   (IN=BB) ;
+146           BY DUPERSID;
+147        
+148              LABEL DIABPERS='PERSONS WHO REPORTED DIABETES';
+149              IF AA AND BB THEN DIABPERS = 1;
+150                           ELSE DIABPERS = 2;
+151        
+152        RUN;
+
+NOTE: There were 35427 observations read from the data set MEPS.H181.
+NOTE: There were 3065 observations read from the data set WORK.DIABPERS.
+NOTE: The data set WORK.FY1 has 35427 observations and 1832 variables.
+NOTE: DATA statement used (Total process time):
+      real time           2.34 seconds
+      cpu time            1.32 seconds
+      
+
+153        TITLE3 "Supporting crosstabs for the flag variables";
+154        TITLE3 "UNWEIGHTED # OF PERSONS WHO REPORTED DIABETES, 2015";
+155        PROC FREQ DATA=FY1;
+156          TABLES DIABPERS
+157                 SEX * DIABPERS / LIST MISSING;
+158          FORMAT SEX      sex.
+159                 DIABPERS yesno.
+160            ;
+161        RUN;
+
+                         MIS 500 PORTFOLIO PROJECT - SUMMARY STATISTICS AND HYPOTHESIS TESTS ORIGINAL CODE                         2
+                            CALCULATE SUMMARY STATISTICS ON AGE FOR PERSONS WITH A CONDITION (DIABETES)
+                                        UNWEIGHTED # OF PERSONS WHO REPORTED DIABETES, 2015
+
+                                                         The FREQ Procedure
+
+                                                   PERSONS WHO REPORTED DIABETES
+ 
+                                                                        Cumulative    Cumulative
+                                   DIABPERS    Frequency     Percent     Frequency      Percent
+                                   -------------------------------------------------------------
+                                      YES          3065        8.65          3065         8.65  
+                                      NO          32362       91.35         35427       100.00  
+
+
+                                                                             Cumulative    Cumulative
+                                 SEX    DIABPERS    Frequency     Percent     Frequency      Percent
+                              -----------------------------------------------------------------------
+                              MALE      YES             1393        3.93          1393         3.93  
+                              MALE      NO             15620       44.09         17013        48.02  
+                              FEMALE    YES             1672        4.72         18685        52.74  
+                              FEMALE    NO             16742       47.26         35427       100.00  
+NOTE: There were 35427 observations read from the data set WORK.FY1.
+NOTE: The PROCEDURE FREQ printed page 2.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.67 seconds
+      cpu time            0.23 seconds
+      
+
+162        
+163        /*4) MEPS PROVIDED AND STUDENT MODIFIED CODE TO CALCULATE EXPENDITURES FOR PERSONS WITH DIABETES VS. NOT BY GENDER AND
+163      ! RACE*/
+3                                                          The SAS System
+
+164        
+165        ODS GRAPHICS OFF;
+166        ODS LISTING CLOSE;
+167        PROC MEANS DATA=FY1 SUM STD MEAN;
+168        	CLASS DIABPERS SEX;
+169        	VAR TOTEXP15 TOTSLF15 OBTOTV15;
+170            FORMAT DIABPERS yesno.
+171            		SEX sex.
+172            		;
+173        RUN;
+
+NOTE: There were 35427 observations read from the data set WORK.FY1.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.72 seconds
+      cpu time            0.28 seconds
+      
+
+174        
+175        ODS GRAPHICS OFF;
+176        ODS LISTING CLOSE;
+177        PROC MEANS DATA=FY1 SUM STD MEAN;
+178        	CLASS DIABPERS RACETHX;
+179        	VAR TOTEXP15 TOTSLF15 OBTOTV15;
+180            FORMAT DIABPERS yesno.
+181            		RACETHX race.
+182            		;
+183        RUN;
+
+NOTE: There were 35427 observations read from the data set WORK.FY1.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.78 seconds
+      cpu time            0.31 seconds
+      
+
+184        
+185        
+186        /*5) STUDENT CREATED SUMMARY STATISTICS TO CALCULATE AGE OF DIAGNOSIS FOR PERSONS WHO REPORTED DIABETES BY RACE*/
+187        
+188        PROC means data = FY1 (WHERE=(DIABPERS = 1 and diabaged > 0)) N STD MEAN MEDIAN;
+189        	CLASS RACETHX;
+190        	VAR DIABAGED ;
+191        	FORMAT RACETHX	race.;
+192        	RUN;
+
+NOTE: There were 2504 observations read from the data set WORK.FY1.
+      WHERE (DIABPERS=1) and (diabaged>0);
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.69 seconds
+      cpu time            0.23 seconds
+      
+
+193        	
+194        TITLE3 "UNWEIGHTED # OF PERSONS BY RACE, 2015";
+195        PROC FREQ DATA=FY1;
+196          TABLES RACETHX / LIST MISSING;
+197          FORMAT RACETHX      race.
+198            ;
+199        RUN;
+
+NOTE: There were 35427 observations read from the data set WORK.FY1.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.64 seconds
+      cpu time            0.22 seconds
+      
+
+200        TITLE3 "UNWEIGHTED # OF PERSONS WHO REPORTED DIABETES BY RACE, 2015";
+201        PROC FREQ DATA=FY1 (WHERE = (DIABPERS = 1));
+202          TABLES RACETHX / LIST MISSING;
+203          FORMAT RACETHX      race.
+204            ;
+205        RUN;
+
+NOTE: There were 3065 observations read from the data set WORK.FY1.
+      WHERE DIABPERS=1;
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.73 seconds
+      cpu time            0.23 seconds
+4                                                          The SAS System
+
+      
+
+206        	
+207        /*6) STUDENT CREATED TTESTS TO DETERMINE IF THERE IS A DIFFERENCE IN THE AGE OF DIABETES DIAGNOSIS OR SELF EXPENDITURES
+207      ! BY GENDER*/
+208        
+209        PROC TTEST DATA = FY1 (WHERE=(DIABPERS = 1 and diabaged > 0));
+210        	CLASS SEX;
+211        	VAR DIABAGED;
+212        	FORMAT SEX	sex.;
+213        	Title 'H0: There is no difference between the average age of diabetes diagnosis for males and females';
+214        RUN;
+
+NOTE: PROCEDURE TTEST used (Total process time):
+      real time           0.73 seconds
+      cpu time            0.27 seconds
+      
+
+215        
+216        PROC TTEST DATA = FY1 (WHERE=(DIABPERS = 1 and totslf15 >= 0));
+217        	CLASS SEX;
+218        	VAR TOTSLF15;
+219        	FORMAT SEX	sex.;
+220        	Title 'H0: There is no difference between the average self paid expenses for males and females';
+221        RUN;
+
+NOTE: PROCEDURE TTEST used (Total process time):
+      real time           0.74 seconds
+      cpu time            0.29 seconds
+      
+
+222        
+223        /*6) STUDENT CREATED ANOVA TEST TO DETERMINE IF THERE IS A DIFFERENCE IN THE AGE OF DIABETES DIAGNOSIS OR SELF
+223      ! EXPENDITURES BY RACE*/
+224        
+225        PROC ANOVA DATA = FY1 (WHERE=(DIABPERS = 1 and diabaged > 0));
+226        	CLASS RACETHX;
+227        	MODEL DIABAGED=RACETHX;
+228        	MEANS RACETHX/TUKEY;
+229        	FORMAT RACETHX race.;
+230        TITLE 'H0: Average age of diabetes diagnosis are equal across races';
+231        RUN;
+
+231      !     	
+232        
+
+NOTE: PROCEDURE ANOVA used (Total process time):
+      real time           0.76 seconds
+      cpu time            0.32 seconds
+      
+
+233        PROC ANOVA DATA = FY1 (WHERE=(DIABPERS = 1 and totslf15 >= 0));
+234        	CLASS RACETHX;
+235        	MODEL TOTSLF15=RACETHX;
+236        	MEANS RACETHX/TUKEY;
+237        	FORMAT RACETHX race.;
+238        TITLE 'H0: Average self expenditures for diabetes diagnosed are equal across races';
+239        RUN;
+
+
+NOTE: PROCEDURE ANOVA used (Total process time):
+      real time           0.76 seconds
+      cpu time            0.33 seconds
+      
+
+240        PROC PRINTTO;
+241        RUN;
+

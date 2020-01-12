@@ -1,0 +1,455 @@
+ 
+ 1          OPTIONS NONOTES NOSTIMER NOSOURCE NOSYNTAXCHECK;
+ 72         
+ 73         FILENAME in_h180 '/folders/myfolders/sasuser.v94/MEPS/h180.ssp';
+ 74         
+ 75         proc xcopy in = in_h180 out = WORK IMPORT;
+ 76         run;
+ 
+ NOTE: Input library IN_H180 is sequential.
+ NOTE: Copying IN_H180.H180 to WORK.H180 (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 123227 observations read from the data set IN_H180.H180.
+ NOTE: The data set WORK.H180 has 123227 observations and 27 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           0.53 seconds
+       cpu time            0.41 seconds
+       
+ 
+ 77         
+ 78         
+ 79         data MEPS.h180;
+ 80           set WORK.h180;
+ 81         run;
+ 
+ NOTE: There were 123227 observations read from the data set WORK.H180.
+ NOTE: The data set MEPS.H180 has 123227 observations and 27 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.17 seconds
+       cpu time            0.08 seconds
+       
+ 
+ 82         
+ 83         FILENAME in_h181 '/folders/myfolders/sasuser.v94/MEPS/h181.ssp';
+ 84         
+ 85         proc xcopy in = in_h181 out = WORK IMPORT;
+ 86         run;
+ 
+ NOTE: Input library IN_H181 is sequential.
+ NOTE: Copying IN_H181.H181 to WORK.H181 (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 35427 observations read from the data set IN_H181.H181.
+ NOTE: The data set WORK.H181 has 35427 observations and 1831 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           9.70 seconds
+       cpu time            8.02 seconds
+       
+ 
+ 87         
+ 88         
+ 89         data MEPS.h181;
+ 90           set WORK.h181;
+ 91         run;
+ 
+ NOTE: There were 35427 observations read from the data set WORK.H181.
+ NOTE: The data set MEPS.H181 has 35427 observations and 1831 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           2.45 seconds
+       cpu time            1.16 seconds
+       
+ 
+ 92         
+ 93         FILENAME in_h164 '/folders/myfolders/sasuser.v94/MEPS/h164.ssp';
+ 94         
+ 95         proc xcopy in = in_h164 out = WORK IMPORT;
+ 96         run;
+ 
+ NOTE: Input library IN_H164 is sequential.
+ NOTE: Copying IN_H164.H164 to WORK.H164 (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 17923 observations read from the data set IN_H164.H164.
+ NOTE: The data set WORK.H164 has 17923 observations and 3495 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           9.19 seconds
+       cpu time            7.09 seconds
+       
+ 
+ 97         
+ 98         
+ 99         data MEPS.h164;
+ 100          set WORK.h164;
+ 101        run;
+ 
+ NOTE: There were 17923 observations read from the data set WORK.H164.
+ NOTE: The data set MEPS.H164 has 17923 observations and 3495 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           3.51 seconds
+       cpu time            1.50 seconds
+       
+ 
+ 102        
+ 103        FILENAME in_h172 '/folders/myfolders/sasuser.v94/MEPS/h172.ssp';
+ 104        
+ 105        proc xcopy in = in_h172 out = WORK IMPORT;
+ 106        run;
+ 
+ NOTE: Input library IN_H172 is sequential.
+ NOTE: Copying IN_H172.H172 to WORK.H172 (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 16714 observations read from the data set IN_H172.H172.
+ NOTE: The data set WORK.H172 has 16714 observations and 3454 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           8.34 seconds
+       cpu time            6.99 seconds
+       
+ 
+ 107        
+ 108        
+ 109        data MEPS.h172;
+ 110          set WORK.h172;
+ 111        run;
+ 
+ NOTE: There were 16714 observations read from the data set WORK.H172.
+ NOTE: The data set MEPS.H172 has 16714 observations and 3454 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           2.44 seconds
+       cpu time            1.07 seconds
+       
+ 
+ 112        
+ 113        FILENAME in_h178a '/folders/myfolders/sasuser.v94/MEPS/h178a.ssp';
+ 114        
+ 115        proc xcopy in = in_h178a out = WORK IMPORT;
+ 116        run;
+ 
+ NOTE: Input library IN_H178A is sequential.
+ NOTE: Copying IN_H178A.H178A to WORK.H178A (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 330453 observations read from the data set IN_H178A.H178A.
+ NOTE: The data set WORK.H178A has 330453 observations and 69 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           4.17 seconds
+       cpu time            3.30 seconds
+       
+ 
+ 117        
+ 118        
+ 119        data MEPS.h178a;
+ 120          set WORK.h178a;
+ 121        run;
+ 
+ NOTE: There were 330453 observations read from the data set WORK.H178A.
+ NOTE: The data set MEPS.H178A has 330453 observations and 69 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           1.32 seconds
+       cpu time            0.68 seconds
+       
+ 
+ 122        
+ 123        FILENAME in_h178b '/folders/myfolders/sasuser.v94/MEPS/h178b.ssp';
+ 124        
+ 125        proc xcopy in = in_h178b out = WORK IMPORT;
+ 126        run;
+ 
+ NOTE: Input library IN_H178B is sequential.
+ NOTE: Copying IN_H178B.H178B to WORK.H178B (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 28090 observations read from the data set IN_H178B.H178B.
+ NOTE: The data set WORK.H178B has 28090 observations and 76 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           0.31 seconds
+       cpu time            0.25 seconds
+       
+ 
+ 127        
+ 128        
+ 129        data MEPS.h178b;
+ 130          set WORK.h178b;
+ 131        run;
+ 
+ NOTE: There were 28090 observations read from the data set WORK.H178B.
+ NOTE: The data set MEPS.H178B has 28090 observations and 76 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.14 seconds
+       cpu time            0.07 seconds
+       
+ 
+ 132        
+ 133        FILENAME in_h178d '/folders/myfolders/sasuser.v94/MEPS/h178d.ssp';
+ 134        
+ 135        proc xcopy in = in_h178d out = WORK IMPORT;
+ 136        run;
+ 
+ NOTE: Input library IN_H178D is sequential.
+ NOTE: Copying IN_H178D.H178D to WORK.H178D (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 2921 observations read from the data set IN_H178D.H178D.
+ NOTE: The data set WORK.H178D has 2921 observations and 60 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           0.09 seconds
+       cpu time            0.03 seconds
+       
+ 
+ 137        
+ 138        
+ 139        data MEPS.h178d;
+ 140          set WORK.h178d;
+ 141        run;
+ 
+ NOTE: There were 2921 observations read from the data set WORK.H178D.
+ NOTE: The data set MEPS.H178D has 2921 observations and 60 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.03 seconds
+       cpu time            0.02 seconds
+       
+ 
+ 142        
+ 143        FILENAME in_h178e '/folders/myfolders/sasuser.v94/MEPS/h178e.ssp';
+ 144        
+ 145        proc xcopy in = in_h178e out = WORK IMPORT;
+ 146        run;
+ 
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           0.08 seconds
+       cpu time            0.06 seconds
+       
+ NOTE: Input library IN_H178E is sequential.
+ NOTE: Copying IN_H178E.H178E to WORK.H178E (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 7163 observations read from the data set IN_H178E.H178E.
+ NOTE: The data set WORK.H178E has 7163 observations and 66 variables.
+ 
+ 147        
+ 148        
+ 149        data MEPS.h178e;
+ 150          set WORK.h178e;
+ 151        run;
+ 
+ NOTE: There were 7163 observations read from the data set WORK.H178E.
+ NOTE: The data set MEPS.H178E has 7163 observations and 66 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.04 seconds
+       cpu time            0.02 seconds
+       
+ 
+ 152        
+ 153        FILENAME in_h178f '/folders/myfolders/sasuser.v94/MEPS/h178f.ssp';
+ 154        
+ 155        proc xcopy in = in_h178f out = WORK IMPORT;
+ 156        run;
+ 
+ NOTE: Input library IN_H178F is sequential.
+ NOTE: Copying IN_H178F.H178F to WORK.H178F (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 14178 observations read from the data set IN_H178F.H178F.
+ NOTE: The data set WORK.H178F has 14178 observations and 69 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           0.15 seconds
+       cpu time            0.12 seconds
+       
+ 
+ 157        
+ 158        
+ 159        data MEPS.h178f;
+ 160          set WORK.h178f;
+ 161        run;
+ 
+ NOTE: There were 14178 observations read from the data set WORK.H178F.
+ NOTE: The data set MEPS.H178F has 14178 observations and 69 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.06 seconds
+       cpu time            0.04 seconds
+       
+ 
+ 162        
+ 163        FILENAME in_h178g '/folders/myfolders/sasuser.v94/MEPS/h178g.ssp';
+ 164        
+ 165        proc xcopy in = in_h178g out = WORK IMPORT;
+ 166        run;
+ 
+ NOTE: Input library IN_H178G is sequential.
+ NOTE: Copying IN_H178G.H178G to WORK.H178G (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 172388 observations read from the data set IN_H178G.H178G.
+ NOTE: The data set WORK.H178G has 172388 observations and 56 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           1.58 seconds
+       cpu time            1.12 seconds
+       
+ 
+ 167        
+ 168        
+ 169        data MEPS.h178g;
+ 170          set WORK.h178g;
+ 171        run;
+ 
+ NOTE: There were 172388 observations read from the data set WORK.H178G.
+ NOTE: The data set MEPS.H178G has 172388 observations and 56 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.52 seconds
+       cpu time            0.23 seconds
+       
+ 
+ 172        
+ 173        FILENAME in_h178h '/folders/myfolders/sasuser.v94/MEPS/h178h.ssp';
+ 174        
+ 175        proc xcopy in = in_h178h out = WORK IMPORT;
+ 176        run;
+ 
+ NOTE: Input library IN_H178H is sequential.
+ NOTE: Copying IN_H178H.H178H to WORK.H178H (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 6663 observations read from the data set IN_H178H.H178H.
+ NOTE: The data set WORK.H178H has 6663 observations and 68 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           0.08 seconds
+       cpu time            0.08 seconds
+       
+ 
+ 177        
+ 178        
+ 179        data MEPS.h178h;
+ 180          set WORK.h178h;
+ 181        run;
+ 
+ NOTE: There were 6663 observations read from the data set WORK.H178H.
+ NOTE: The data set MEPS.H178H has 6663 observations and 68 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.04 seconds
+       cpu time            0.01 seconds
+       
+ 
+ 182        
+ 183        FILENAME in_h178i '/folders/myfolders/sasuser.v94/MEPS/h178if1.ssp';
+ 184        
+ 185        proc xcopy in = in_h178i out = WORK IMPORT;
+ 186        run;
+ 
+ NOTE: Input library IN_H178I is sequential.
+ NOTE: Copying IN_H178I.H178IF1 to WORK.H178IF1 (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 377736 observations read from the data set IN_H178I.H178IF1.
+ NOTE: The data set WORK.H178IF1 has 377736 observations and 6 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           0.46 seconds
+       cpu time            0.34 seconds
+       
+ 
+ 187        
+ 188        
+ 189        data MEPS.h178if1;
+ 190          set WORK.h178if1;
+ 191        run;
+ 
+ NOTE: There were 377736 observations read from the data set WORK.H178IF1.
+ NOTE: The data set MEPS.H178IF1 has 377736 observations and 6 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.23 seconds
+       cpu time            0.16 seconds
+       
+ 
+ 192        
+ 193        FILENAME in_h183 '/folders/myfolders/sasuser.v94/MEPS/h183.ssp';
+ 194        
+ 195        proc xcopy in = in_h183 out = WORK IMPORT;
+ 196        run;
+ 
+ NOTE: Input library IN_H183 is sequential.
+ NOTE: Copying IN_H183.H183 to WORK.H183 (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 15898 observations read from the data set IN_H183.H183.
+ NOTE: The data set WORK.H183 has 15898 observations and 3489 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           8.32 seconds
+       cpu time            6.74 seconds
+       
+ 
+ 197        
+ 198        
+ 199        data MEPS.h183;
+ 200          set WORK.h183;
+ 201        run;
+ 
+ NOTE: There were 15898 observations read from the data set WORK.H183.
+ NOTE: The data set MEPS.H183 has 15898 observations and 3489 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           2.18 seconds
+       cpu time            1.07 seconds
+       
+ 
+ 202        
+ 203        FILENAME in_h188a '/folders/myfolders/sasuser.v94/MEPS/h188a.ssp';
+ 204        
+ 205        proc xcopy in = in_h188a out = WORK IMPORT;
+ 206        run;
+ 
+ NOTE: Input library IN_H188A is sequential.
+ NOTE: Copying IN_H188A.H188A to WORK.H188A (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 319685 observations read from the data set IN_H188A.H188A.
+ NOTE: The data set WORK.H188A has 319685 observations and 67 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           4.99 seconds
+       cpu time            3.12 seconds
+       
+ 
+ 207        
+ 208        
+ 209        data MEPS.h188a;
+ 210          set WORK.h188a;
+ 211        run;
+ 
+ NOTE: There were 319685 observations read from the data set WORK.H188A.
+ NOTE: The data set MEPS.H188A has 319685 observations and 67 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           1.37 seconds
+       cpu time            0.64 seconds
+       
+ 
+ 212        
+ 213        FILENAME in_h192 '/folders/myfolders/sasuser.v94/MEPS/h192.ssp';
+ 214        
+ 215        proc xcopy in = in_h192 out = WORK IMPORT;
+ 216        run;
+ 
+ NOTE: Input library IN_H192 is sequential.
+ NOTE: Copying IN_H192.H192 to WORK.H192 (memtype=DATA).
+ NOTE: System Options for BUFSIZE and REUSE were used at user's request.
+ NOTE: Libname and/or system options for compress, pointobs, data representation and encoding attributes were used at user's request.
+ NOTE: There were 34655 observations read from the data set IN_H192.H192.
+ NOTE: The data set WORK.H192 has 34655 observations and 1941 variables.
+ NOTE: PROCEDURE XCOPY used (Total process time):
+       real time           12.58 seconds
+       cpu time            8.80 seconds
+       
+ 
+ 217        
+ 218        
+ 219        data MEPS.h192;
+ 220          set WORK.h192;
+ 221        run;
+ 
+ NOTE: There were 34655 observations read from the data set WORK.H192.
+ NOTE: The data set MEPS.H192 has 34655 observations and 1941 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           3.87 seconds
+       cpu time            1.25 seconds
+       
+ 
+ 222        
+ 223        OPTIONS NONOTES NOSTIMER NOSOURCE NOSYNTAXCHECK;
+ 235        
